@@ -57,19 +57,18 @@ def main():
 
     # Fetch collaborators
     collaborators = get_repo_collaborators(owner, repo, token)
-    print(collaborators)
     # Fetch teams with access to the repo
     teams = get_repo_teams(owner, repo, token)
-    print(teams)
     # Collect team members for each team
     all_team_members = []
     for team_slug in teams:
         all_team_members += get_team_members(owner, team_slug, token)
-    print(all_team_members)
     # Write combined list of users to a file
     with open("access_report.txt", "w") as f:
         # Write collaborators and team members into the file
-        all_users = collaborators + all_team_members
+        #all_users = collaborators + all_team_members
+        all_users = all_team_members
+
         for user in all_users:
             f.write(f"{user}\n")
 
