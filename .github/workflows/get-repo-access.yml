@@ -1,39 +1,28 @@
 # .github/workflows/get-repo-access.yml
-name: Get Repository Access (Reusable)
+name: Get Repository Access
 
 on:
   workflow_call:
     inputs:
-      owner:
-        required: true
-        type: string
       repo:
         required: true
-        type: string
+        type: string  # This input will be in the format "owner/repository"
+    secrets:
+      ORG_PAT:  # The PAT stored in the org-level secrets for accessing repositories
+        required: true
 
 jobs:
   get-access:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
+      - name: Set repo environment variables
         run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi
+          echo "GITHUB_REPOSITORY=${{ inputs.repo }}" >> $GITHUB_ENV
 
       - name: Get list of people with access to the repository
         env:
-          GITHUB_TOKEN: ${{ secrets.ORG_PAT }}  # Use the organization-level PAT directly
-          OWNER: ${{ inputs.owner }}
-          REPO: ${{ inputs.repo }}
+          GITHUB_TOKEN: ${{ secrets.ORG_PAT }}  # Use the organization-level PAT
         run: |
           python3 get_repo_access.py
 

@@ -33,47 +33,31 @@ def get_repo_teams(owner, repo, token):
         print(f"Error fetching teams: {response.status_code}, {response.text}")
         return []
 
-def get_team_members(org, team_slug, token):
-    """Get the list of members of a given team in an organization."""
-    url = f"https://api.github.com/orgs/{org}/teams/{team_slug}/members"
-    headers = {
-        'Authorization': f'token {token}',
-        'Accept': 'application/vnd.github.v3+json'
-    }
-
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        return [member['login'] for member in response.json()]
-    else:
-        print(f"Error fetching team members: {response.status_code}, {response.text}")
-        return []
-
 def main():
-    # Get environment variables
-    owner = os.getenv('OWNER')
-    repo = os.getenv('REPO')
+    # Get the GITHUB_TOKEN and the full repo (owner/repo) from environment variables
     token = os.getenv('GITHUB_TOKEN')
+    full_repo = os.getenv('GITHUB_REPOSITORY')  # This will be in the format 'owner/repo'
 
-    # Fetch collaborators
-    collaborators = get_repo_collaborators(owner, repo, token)
-    # Fetch teams with access to the repo
+    # Split the 'owner/repo' into 'owner' and 'repo'
+    if full_repo:
+        owner, repo = full_repo.split('/')
+    else:
+        print("Error: GITHUB_REPOSITORY environment variable is not set.")
+        return
+
+    print(f"Processing repository: {owner}/{repo}")
+
+    # Fetch collaborators and teams
+    collaborators = [] #get_repo_collaborators(owner, repo, token)
     teams = get_repo_teams(owner, repo, token)
-    # Collect team members for each team
-    all_team_members = []
-    for team_slug in teams:
-        all_team_members += get_team_members(owner, team_slug, token)
+
     # Write combined list of users to a file
     with open("access_report.txt", "w") as f:
-        # Write collaborators and team members into the file
-        #all_users = collaborators + all_team_members
-        all_users = all_team_members
-
+        all_users = collaborators + teams
         for user in all_users:
             f.write(f"{user}\n")
 
-if __name__ == "__main__":
-    from dotenv import load_dotenv
-    load_dotenv()
+    print("Access report generated successfully.")
 
+if __name__ == "__main__":
     main()
