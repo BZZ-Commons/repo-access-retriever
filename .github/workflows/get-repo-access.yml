@@ -20,16 +20,23 @@ jobs:
         run: |
           echo "GITHUB_REPOSITORY=${{ inputs.repo }}" >> $GITHUB_ENV
 
+      - name: Checkout autograde repo
+        uses: actions/checkout@v4
+        with:
+          repository: BZZ-Commons/repo-access-retriever
+          path: repoaccessretriever
+          ref: main
+
       - name: Get list of people with access to the repository
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_PAT }}  # Use the organization-level PAT
         run: |
-          python3 get_repo_access.py
+          python3 ./repo-access-retriever/get_repo_access.py
 
       - name: Set output
         id: access_list
         run: |
-          echo "users=$(cat access_report.txt)" >> $GITHUB_ENV
+          echo "users=$(cat ./repo-access-retriever/access_report.txt)" >> $GITHUB_ENV
 
     outputs:
       users: ${{ steps.access_list.outputs.users }}
