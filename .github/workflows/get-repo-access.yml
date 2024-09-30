@@ -7,9 +7,10 @@ on:
       repo:
         required: true
         type: string  # This input will be in the format "owner/repository"
-    secrets:
-      ORG_PAT:  # The PAT stored in the org-level secrets for accessing repositories
-        required: true
+
+env:
+  DEVOPS_DIR: devops
+  ORG_PAT: ${{ secrets.ORG_PAT }}
 
 jobs:
   get-access:
