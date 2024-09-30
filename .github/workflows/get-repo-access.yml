@@ -7,6 +7,9 @@ on:
       repo:
         required: true
         type: string  # This input will be in the format "owner/repository"
+    secrets:
+      ORG_PAT:   # OrgaA's secret, accessible within this workflow
+        required: true
 
 jobs:
   get-access:
