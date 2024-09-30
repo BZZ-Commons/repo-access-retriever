@@ -8,10 +8,6 @@ on:
         required: true
         type: string  # This input will be in the format "owner/repository"
 
-env:
-  DEVOPS_DIR: devops
-  ORG_PAT: ${{ secrets.ORG_PAT }}
-
 jobs:
   get-access:
     runs-on: ubuntu-latest
